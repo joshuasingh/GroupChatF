@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/profileactivity"
+    tools:context=".ProfileActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/set_profile_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp"
+        android:src="@drawable/profileimg"
+        app:civ_border_color="@color/colorPrimaryDark"
+        app:civ_border_width="2dp" />
+
+    <EditText
+        android:id="@+id/set_user_name"
+        android:layout_width="268dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/set_profile_image"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="27dp"
+        android:background="@android:color/transparent"
+        android:hint="Name"
+        android:inputType="textMultiLine" />
+
+    <EditText
+        android:id="@+id/set_status"
+        android:layout_width="268dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/set_profile_image"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="79dp"
+        android:background="@android:color/transparent"
+        android:hint="Status"
+        android:inputType="textMultiLine" />
+
+    <Button
+        android:id="@+id/updatebtn"
+        android:layout_width="328dp"
+        android:layout_height="43dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="138dp"
+        android:background="@drawable/update"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.798" />
+
+    <ProgressBar
+        android:id="@+id/pprogressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:translationZ="2dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</RelativeLayout>
