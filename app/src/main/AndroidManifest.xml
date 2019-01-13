@@ -5,8 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,20 +15,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name="com.groupchat.jasonchesney.groupchat.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".VerifyActivity" />
-        <activity android:name=".MainpageActivity" />
-        <activity android:name=".GroupChatActivity" />
-        <activity android:name=".ProfileActivity"></activity>
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
+        <activity android:name="com.groupchat.jasonchesney.groupchat.SignUpActivity" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.VerifyActivity" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.MainpageActivity" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.GroupChatActivity" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.ProfileActivity" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.CreateGroupActivity" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.SelectdGroupActivity" />
+        <activity android:name="com.groupchat.jasonchesney.groupchat.ConnectPageActivity"></activity>
     </application>
 
 </manifest>

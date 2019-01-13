@@ -2,11 +2,14 @@ package com.groupchat.jasonchesney.groupchat;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -52,6 +55,13 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        if(Build.VERSION.SDK_INT >= 21){
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
+        }
 
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid().toString();
@@ -210,7 +220,7 @@ public class ProfileActivity extends AppCompatActivity {
         String setUserStatus = updatestatus.getText().toString();
 
         if(TextUtils.isEmpty(setUserName)){
-            updatename.setError("Email is required");
+            updatename.setError("Name is required");
             updatename.requestFocus();
             return;
         }
@@ -223,7 +233,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         else{
             HashMap<String, String> profileMap = new HashMap<>();
-            profileMap.put("UserID", currentUserID);
+            profileMap.put("Userid", currentUserID);
             profileMap.put("name", setUserName);
             profileMap.put("status", setUserStatus);
             profileMap.put("image", currentImage);

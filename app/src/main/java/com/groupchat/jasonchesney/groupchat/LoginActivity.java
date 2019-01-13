@@ -1,20 +1,18 @@
 package com.groupchat.jasonchesney.groupchat;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,8 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.HashMap;
-
 public class LoginActivity extends AppCompatActivity {
 
     Button login, connect, dhaa;
@@ -34,21 +30,31 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
     private StorageReference userprofileRef;
-    private DatabaseReference registerRef, userRef;
+    private DatabaseReference registerRef, userRef, rootRef;
     ProgressBar progressbar;
     String phonecheck, phonenumber, name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
+        }
+
         login = (Button) findViewById(R.id.login);
         dhaa = (Button) findViewById(R.id.dhaa);
         lphone = (AutoCompleteTextView) findViewById(R.id.phoneauth);
-        progressbar= (ProgressBar) findViewById(R.id.lprogressBar);
+        progressbar = (ProgressBar) findViewById(R.id.lprogressBar);
 
         mAuth = FirebaseAuth.getInstance();
         registerRef = FirebaseDatabase.getInstance().getReference().child("Registered");
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        rootRef = FirebaseDatabase.getInstance().getReference();
         currentUser = mAuth.getCurrentUser();
         userprofileRef = FirebaseStorage.getInstance().getReference().child("Profile Image");
         dhaa.setOnClickListener(new View.OnClickListener() {
@@ -71,53 +77,51 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
 
         super.onStart();
-        if(currentUser != null){
-            Intent intent = new Intent(LoginActivity.this, MainpageActivity.class);
+        if (currentUser != null) {
+            Intent intent = new Intent(LoginActivity.this, ConnectPageActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            finish();
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
     }
 
-        private void userLogin(){
+    private void userLogin() {
 
-            final String phoneno = lphone.getText().toString().trim();
-            phonenumber = "+91" + phoneno;
+        String phoneno = lphone.getText().toString().trim();
+        phonenumber = "+91" + phoneno;
 
-            if(phoneno.isEmpty()){
-                lphone.setError("Phone number is required");
-                lphone.requestFocus();
-                return;
+        if (phoneno.isEmpty()) {
+            lphone.setError("Phone number is required");
+            lphone.requestFocus();
+            return;
+        }
+
+        if (!Patterns.PHONE.matcher(phoneno).matches()) {
+            lphone.setError("Please enter a valid phone number");
+            lphone.requestFocus();
+            return;
+        }
+
+        userRef.child(phonenumber).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    name = dataSnapshot.child("name").getValue().toString();
+                }
             }
 
-            if(!Patterns.PHONE.matcher(phoneno).matches()){
-                lphone.setError("Please enter a valid phone number");
-                lphone.requestFocus();
-                return;
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
+        });
 
-            userRef.child(phonenumber).addValueEventListener(new ValueEventListener() {
+            rootRef.child("Registered").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        name = dataSnapshot.child("name").getValue().toString();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            registerRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(!dataSnapshot.hasChild(phonenumber)){
+                    if (!dataSnapshot.hasChild(phonenumber)) {
                         Toast.makeText(LoginActivity.this, "Number is not registered", Toast.LENGTH_LONG).show();
-                        }
-                    else {
+                    } else {
                         Intent intent = new Intent(LoginActivity.this, VerifyActivity.class);
                         intent.putExtra("phonenumber", phonenumber);
                         intent.putExtra("name", name);
@@ -130,5 +134,5 @@ public class LoginActivity extends AppCompatActivity {
 
                 }
             });
-        }
+    }
 }

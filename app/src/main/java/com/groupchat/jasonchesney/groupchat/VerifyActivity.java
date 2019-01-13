@@ -1,16 +1,17 @@
 package com.groupchat.jasonchesney.groupchat;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,11 +25,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +36,7 @@ public class VerifyActivity extends AppCompatActivity {
     String a= "a";
     private static final String TAG = "PhoneLogin";
     private boolean mVerificationInProgress = false;
-    private String mVerificationId, currentGroupName, firstname, name, phonesignup, memid,currentUserID;
+    private String mVerificationId, firstname, name, phonesignup, phonenumber, memid, namefetch, numfetch, fname;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
     private FirebaseAuth mAuth;
     private DatabaseReference rootRef, gRef;
@@ -49,6 +47,14 @@ public class VerifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify);
+
+        if(Build.VERSION.SDK_INT >= 21){
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
+        }
+
         confirm= (Button) findViewById(R.id.confirm);
         pveri1= (EditText) findViewById(R.id.gotp1);
         pveri2= (EditText) findViewById(R.id.gotp2);
@@ -61,16 +67,10 @@ public class VerifyActivity extends AppCompatActivity {
         //currentUserID= mAuth.getCurrentUser().getUid();
         rootRef = FirebaseDatabase.getInstance().getReference();
 
-        String phonenumber = getIntent().getStringExtra("phonenumber");
+        phonenumber = getIntent().getStringExtra("phonenumber");
         Bundle bundle = getIntent().getExtras();
         phonesignup = bundle.getString("phonenum");
         firstname = bundle.getString("fname");
-        if(firstname == null){
-            firstname = bundle.getString("name");
-        }
-        else{
-            firstname = bundle.getString("fname");
-        }
         memid = bundle.getString("memberid");
         if(phonenumber == null) {
             sendVerificationCode(phonesignup);
@@ -78,6 +78,7 @@ public class VerifyActivity extends AppCompatActivity {
         else{
             sendVerificationCode(phonenumber);
         }
+
 
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,24 +224,49 @@ public class VerifyActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Log.d(TAG, "signInWithCredential:success");
-                            HashMap<String, Object> phoneandnameMap = new HashMap<>();
-                            phoneandnameMap.put("phone_number", phonesignup);
-                            phoneandnameMap.put("name", firstname);
-                            phoneandnameMap.put("member_id", "mem1");
-                            phoneandnameMap.put("Userid", mAuth.getUid());
-                            rootRef.child("Users").child(phonesignup).updateChildren(phoneandnameMap);
+                            if(phonenumber == null) {
+                                numfetch = phonesignup;
+                            }
+                            else{
+                                numfetch = phonenumber;
+                            }
 
-                            HashMap<String, Object> registermap = new HashMap<>();
-                            registermap.put(phonesignup, phonesignup);
-                            rootRef.child("Registered").updateChildren(registermap);
+                            if(firstname == null) {
+                                HashMap<String, Object> phoneandnameMap = new HashMap<>();
+                                phoneandnameMap.put("phone_number", numfetch);
+                                phoneandnameMap.put("Userid", mAuth.getCurrentUser().getUid());
+                                rootRef.child("Users").child(mAuth.getCurrentUser().getUid()).updateChildren(phoneandnameMap);
 
-                            Intent intent = new Intent(VerifyActivity.this, MainpageActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.putExtra("Vvalue", a);
-                            intent.putExtra("gnam", currentGroupName);
-                            startActivity(intent);
-                            Toast.makeText(VerifyActivity.this,"Verification Done",Toast.LENGTH_SHORT).show();
-                            // ...
+                                HashMap<String, Object> registermap = new HashMap<>();
+                                registermap.put(numfetch, numfetch);
+                                rootRef.child("Registered").updateChildren(registermap);
+                            }
+                            else{
+                                fname = firstname;
+                                HashMap<String, Object> phoneandnameMap = new HashMap<>();
+                                phoneandnameMap.put("phone_number", numfetch);
+                                phoneandnameMap.put("name", fname);
+                                phoneandnameMap.put("Userid", mAuth.getCurrentUser().getUid());
+                                rootRef.child("Users").child(mAuth.getCurrentUser().getUid()).updateChildren(phoneandnameMap);
+
+                                HashMap<String, Object> registermap = new HashMap<>();
+                                registermap.put(numfetch, numfetch);
+                                rootRef.child("Registered").updateChildren(registermap);
+                            }
+
+                            if(!numfetch.equals("+919870778473")) { //Admin
+
+                                Intent intent = new Intent(VerifyActivity.this, ConnectPageActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                Toast.makeText(VerifyActivity.this, "Verification Done", Toast.LENGTH_SHORT).show();
+                                // ...
+                            }
+                            else{
+                                Intent intent = new Intent(VerifyActivity.this, MainpageActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
                         }
                         else {
                             // Log.w(TAG, "signInWithCredential:failure", task.getException());

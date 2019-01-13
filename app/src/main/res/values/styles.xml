@@ -10,4 +10,10 @@
 
     <style name="AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog"></style>
 
+    <style name="OverlayTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/threedotcolor</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:textColorSecondary">@color/threedotcolor</item>
+    </style>
+
 </resources>

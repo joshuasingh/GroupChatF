@@ -56,7 +56,6 @@ public class BottomChatList extends BottomSheetDialogFragment {
                     protected void onBindViewHolder(@NonNull GroupInfoViewHolder holder, int position, @NonNull Contacts model) {
 
                         holder.username.setText(model.getName());
-                        //holder.userstatus.setText(model.getStatus());
                         Picasso.get().load(model.getImage()).placeholder(R.drawable.profileimg).into(holder.profileimage);
                     }
 
@@ -84,7 +83,6 @@ public class BottomChatList extends BottomSheetDialogFragment {
             super(itemView);
 
             username = itemView.findViewById(R.id.user_profile_name);
-            //userstatus = itemView.findViewById(R.id.user_profile_status);
             profileimage = itemView.findViewById(R.id.users_profile_image);
 
         }

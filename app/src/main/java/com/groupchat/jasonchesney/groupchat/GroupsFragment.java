@@ -1,17 +1,22 @@
 package com.groupchat.jasonchesney.groupchat;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -21,10 +26,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
-import java.util.zip.Inflater;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,8 +56,11 @@ public class GroupsFragment extends Fragment {
     private ListView listView;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> listofgroups = new ArrayList<>();
-    private String currentUserID, membertype, currentGroupName;
-    private DatabaseReference groupRef, memberRef, userRef;
+    private String currentUserID, membertype, currentGroupName, getgrp, fetch, randfetch;
+    private DatabaseReference groupRef, memberRef, userRef, rootRef;
+    private int i, s, j;
+    private EditText otp;
+    NotificationCompat.Builder notification;
 
     public GroupsFragment() {
         // Required empty public constructor
@@ -93,6 +102,10 @@ public class GroupsFragment extends Fragment {
 
         initializeFields();
         retrieveAndDisplayGroups();
+
+        notification  = new NotificationCompat.Builder(getContext());
+        notification.setAutoCancel(true);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -121,9 +134,125 @@ public class GroupsFragment extends Fragment {
                     groupChatIntent.putExtra("groupName", currentGroupName);
                     startActivity(groupChatIntent);
                 }*/
-                Intent groupChatIntent = new Intent(getContext(), VerifyActivity.class);
-                groupChatIntent.putExtra("groupName", currentGroupName);
-                startActivity(groupChatIntent);
+                groupRef.child(currentGroupName).child("Members").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChild("total_members")){
+                            String v= dataSnapshot.child("total_members").getValue().toString();
+                            s = Integer.parseInt(v)+1;
+                        }
+                        else{
+                            s=2;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                groupRef.child(currentGroupName).child("Members").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChild("group_id")){
+                            fetch = dataSnapshot.child("group_id").getValue().toString();
+                            getgrp= fetch;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialog);
+                builder.setTitle("Connect to the group?");
+
+                builder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        int lengthr = 2;
+                        char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+                        StringBuilder str = new StringBuilder();
+                        final Random random = new Random();
+                        for(j=1; j< lengthr; j++){
+                            char c = chars[random.nextInt(chars.length)];
+                            str.append(c);
+                            randfetch = str.toString();
+                        }
+
+                        for(i=2; i<100; i++){
+                            if(s == i){
+                                break;
+                            }
+                        }
+
+                        dialog.dismiss();
+
+                        notification.setSmallIcon(R.drawable.ticker);
+                        notification.setWhen(System.currentTimeMillis());
+                        notification.setContentTitle("Your One Time Passcode is :");
+                        notification.setContentText(getgrp+" "+randfetch+"0"+i);
+
+                        NotificationManager nm = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                        nm.notify(1, notification.build());
+
+                        AlertDialog.Builder conbuild = new AlertDialog.Builder(getContext(), R.style.AlertDialog);
+                        conbuild.setTitle("Enter One Time Passcode :");
+
+                        otp= new EditText(getContext());
+                        otp.setHint("OTP");
+                        conbuild.setView(otp);
+
+                        conbuild.setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                String feth = (getgrp+" "+randfetch+"0"+i).toString();
+                                String otpget = otp.getText().toString();
+                                if(otpget.equals(feth)) {
+                                    HashMap<String, Object> memidMap = new HashMap<>();
+                                    memidMap.put("member_id", otpget);
+                                    memidMap.put("member_type", "Group Member");
+                                    groupRef.child(currentGroupName).child("Members").child(currentUserID).updateChildren(memidMap);
+
+
+                                    groupRef.child(currentGroupName).child("Members").child("total_members")
+                                            .setValue(i);
+
+                                    Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
+                                    groupChatIntent.putExtra("groupName", currentGroupName);
+                                    startActivity(groupChatIntent);
+                                }
+                                else{
+                                    Toast.makeText(getContext(), "Invalid OTP", Toast.LENGTH_SHORT).show();
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+
+                        conbuild.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                        conbuild.show();
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         });
         return groupFragmentView;
