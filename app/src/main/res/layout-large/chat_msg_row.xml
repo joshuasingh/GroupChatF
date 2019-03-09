@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/singleMessageContainer"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/chatname"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_gravity="start"
+        android:textColor="@color/threedotcolor"
+        android:gravity="center_vertical"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:text="Reciever Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/chatnamesender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="end"
+        android:layout_alignParentEnd="true"
+        android:gravity="end"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Sender Name"
+        android:textColor="@color/threedotcolor"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/chatmessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chatname"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="end"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="Reciever Message"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/chatmsgsender"
+        android:layout_width="162dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chatname"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:layout_marginStart="222dp"
+        android:layout_marginTop="-3dp"
+        android:padding="10dp"
+        android:text="Sender message"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="15sp" />
+
+</RelativeLayout>

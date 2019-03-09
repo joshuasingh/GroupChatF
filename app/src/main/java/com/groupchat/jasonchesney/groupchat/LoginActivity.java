@@ -25,7 +25,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class LoginActivity extends AppCompatActivity {
 
-    Button login, connect, dhaa;
+    Button login, connect, dhaa, admin;
     AutoCompleteTextView lphone;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         login = (Button) findViewById(R.id.login);
+        admin = (Button) findViewById(R.id.aa);
         dhaa = (Button) findViewById(R.id.dhaa);
         lphone = (AutoCompleteTextView) findViewById(R.id.phoneauth);
         progressbar = (ProgressBar) findViewById(R.id.lprogressBar);
@@ -70,6 +71,15 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 userLogin();
+            }
+        });
+
+        admin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, AdminActivity.class);
+                startActivity(i);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
     }

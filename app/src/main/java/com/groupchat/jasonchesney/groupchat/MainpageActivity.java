@@ -38,7 +38,7 @@ public class MainpageActivity extends AppCompatActivity {
     private DatabaseReference rootRef, memberref, gRef, userRef, gnameRef;
 
     private String currentUserID, userProfileimage, currentUserName, newGroupName, randfetch, randfetch1, memtype;
-    private String MEMBER_TYPE = "Group Owner";
+    private String MEMBER_TYPE = "Admin";
     EditText groupText;
 
     CountDownTimer cdt;
@@ -58,7 +58,7 @@ public class MainpageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainpage);
 
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -70,21 +70,22 @@ public class MainpageActivity extends AppCompatActivity {
         gnameRef = FirebaseDatabase.getInstance().getReference("Groups");
         currentUserID = mAuth.getCurrentUser().getUid();
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        rootRef= FirebaseDatabase.getInstance().getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         del = (Button) findViewById(R.id.deletebtn);
 
         setUpRecyclerView();
 
-        apb= (AppBarLayout) findViewById(R.id.appBarLayout);
+        apb = (AppBarLayout) findViewById(R.id.appBarLayout);
 
-        mtoolbar= (Toolbar) findViewById(R.id.mainpagetoolbar);
+        mtoolbar = (Toolbar) findViewById(R.id.mainpagetoolbar);
         setSupportActionBar(mtoolbar);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color='#254F6E'><h6>Groups</h6></font>"));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color='#10101'><h6>Groups</h6></font>"));
 
         getUserInfo();
     }
 
+    //Currently Admin on login comes to this page where the Groups are saved in the recycler view
     private void setUpRecyclerView() {
 
         FirebaseRecyclerOptions<GroupModel> goptions = new FirebaseRecyclerOptions.Builder<GroupModel>()
@@ -97,17 +98,19 @@ public class MainpageActivity extends AppCompatActivity {
         remainlist.setLayoutManager(new LinearLayoutManager(this));
         remainlist.setAdapter(firebasereycleradapter);
 
+        //to delete a particular group i made this method through interface
         firebasereycleradapter.setItemDeleteListener(new MainPageRecyclerAdapter.deleteItem() {
             @Override
             public void onItemDelete(DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     ds.getRef().removeValue();
                 }
                 firebasereycleradapter.notifyDataSetChanged();
             }
         });
 
+        // on clicking on a group you go to the groups main page
         firebasereycleradapter.setOnItemClickListener(new MainPageRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(DataSnapshot dataSnapshot, int position) {
@@ -117,23 +120,21 @@ public class MainpageActivity extends AppCompatActivity {
                 rootRef.child("Groups").child(newGroupName).child("Members").child(currentUserID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.hasChild("member_type")) {
+                        if (dataSnapshot.hasChild("member_type")) {
                             memtype = dataSnapshot.child("member_type").getValue().toString();
 
-                            if(memtype.equals(MEMBER_TYPE)){
+                            if (memtype.equals(MEMBER_TYPE)) {
                                 Intent intent = new Intent(MainpageActivity.this, SelectdGroupActivity.class);
                                 intent.putExtra("newGroupName", newGroupName);
                                 intent.putExtra("groupid", fetch);
                                 startActivity(intent);
-                            }
-                            else{
+                            } else {
                                 Intent intent = new Intent(MainpageActivity.this, ConnectPageActivity.class);
                                 intent.putExtra("newGroupName", newGroupName);
                                 intent.putExtra("groupid", fetch);
                                 startActivity(intent);
                             }
-                        }
-                        else{
+                        } else {
                             Intent intent = new Intent(MainpageActivity.this, ConnectPageActivity.class);
                             intent.putExtra("newGroupName", newGroupName);
                             intent.putExtra("groupid", fetch);
@@ -165,7 +166,7 @@ public class MainpageActivity extends AppCompatActivity {
     }
 
     private void sendUsertoLogin() {
-        Intent intent= new Intent(MainpageActivity.this, LoginActivity.class);
+        Intent intent = new Intent(MainpageActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -178,21 +179,22 @@ public class MainpageActivity extends AppCompatActivity {
         return true;
     }
 
+    // the 3 dots has these intents
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        if(item.getItemId() == R.id.proupdate){
+        if (item.getItemId() == R.id.proupdate) {
             sendUsertoProfile();
         }
-        if(item.getItemId() == R.id.logout){
+        if (item.getItemId() == R.id.logout) {
             mAuth.signOut();
             sendUsertoLogin();
         }
-        if(item.getItemId() == R.id.group_create){
+        if (item.getItemId() == R.id.group_create) {
             requestNewGroup();
         }
-        return  true;
+        return true;
     }
 
     private void requestNewGroup() {
@@ -203,26 +205,30 @@ public class MainpageActivity extends AppCompatActivity {
     }
 
     private void sendUsertoProfile() {
-        Intent updateintent= new Intent(MainpageActivity.this, ProfileActivity.class);
+        Intent updateintent = new Intent(MainpageActivity.this, ProfileActivity.class);
         startActivity(updateintent);
     }
+
     private void getUserInfo() {
-        userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists() && (dataSnapshot.hasChild("name")) && (dataSnapshot.hasChild("image"))){
-                    currentUserName = dataSnapshot.child("name").getValue().toString();
-                    userProfileimage = dataSnapshot.child("image").getValue().toString();
-                }
-                if(dataSnapshot.exists() && (dataSnapshot.hasChild("name"))){
-                    currentUserName = dataSnapshot.child("name").getValue().toString();
-                }
-            }
+        try{
+                userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists() && (dataSnapshot.hasChild("name")) && (dataSnapshot.hasChild("image"))) {
+                            currentUserName = dataSnapshot.child("name").getValue().toString();
+                            userProfileimage = dataSnapshot.child("image").getValue().toString();
+                        }
+                        if (dataSnapshot.exists() && (dataSnapshot.hasChild("name"))) {
+                            currentUserName = dataSnapshot.child("name").getValue().toString();
+                        }
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-    }
+                    }
+                });
+        }
+        catch(Exception e){}
+}
 }

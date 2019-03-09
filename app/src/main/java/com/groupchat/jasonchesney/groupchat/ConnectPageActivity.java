@@ -17,15 +17,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Random;
 
 public class ConnectPageActivity extends AppCompatActivity {
 
-    Button connect;
+    Button connect, createnew, signout;
     EditText memcode;
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
     DatabaseReference rootRef, userRef, gidRef;
-    String groupname, currentUserID, currentUserName, userProfileimage, groupid, randfetch, gencode;
+    String groupname, currentUserID, currentUserName, userProfileimage, groupid, randfetch, gencode, tget;
     int s, j, i;
     //NotificationCompat.Builder notification;
 
@@ -38,7 +39,10 @@ public class ConnectPageActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         connect = (Button) findViewById(R.id.connect);
+        createnew = (Button) findViewById(R.id.crejump);
+        signout = (Button) findViewById(R.id.signout);
         memcode = (EditText) findViewById(R.id.memgencode);
+
 
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
@@ -51,6 +55,40 @@ public class ConnectPageActivity extends AppCompatActivity {
 //        notification  = new NotificationCompat.Builder(ConnectPageActivity.this);
 //        notification.setAutoCancel(true);
 
+        // This where the onclick function should generate request in Admin.
+        createnew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ConnectPageActivity.this, CreateGroupActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // to signout to login page
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent intent = new Intent(ConnectPageActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                finish();
+            }
+        });
+
+        // This code snippit randomly generates 2 numbers as the part of members id
+        int lengthr = 2;
+        char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        StringBuilder str = new StringBuilder();
+        final Random random = new Random();
+        for(j=1; j< lengthr; j++){
+            char c = chars[random.nextInt(chars.length)];
+            str.append(c);
+            randfetch = str.toString();
+        }
+
+        // the connect button after entering the 5 digit code takes user to the specified group through the Code
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,32 +105,27 @@ public class ConnectPageActivity extends AppCompatActivity {
                                         .getRef().getKey();
                             }
 
-//                        if(dataSnapshot.child("Groups").child(groupname).hasChild("total_members")){
-//                            String v= dataSnapshot.child("total_members").getValue().toString();
-//                            s = Integer.parseInt(v)+1;
-//                        }
-//                        else{
-//                            s=2;
-//                        }
-//
-//                        int lengthr = 2;
-//                        char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-//                        StringBuilder str = new StringBuilder();
-//                        final Random random = new Random();
-//                        for(j=1; j< lengthr; j++){
-//                            char c = chars[random.nextInt(chars.length)];
-//                            str.append(c);
-//                            randfetch = str.toString();
-//                        }
-//
-//                        for(i=2; i<100; i++){
-//                            if(s == i){
-//                                break;
-//                            }
-//                        }
+                        if(dataSnapshot.child("Groups").child(groupname).child("Members").hasChild("total_members")){
+                            String v= dataSnapshot.child("Groups").child(groupname).child("Members").child("total_members").getValue().toString();
+                            s = Integer.parseInt(v)+1;
+                        }
+                        else{
+                            s=2;
+                        }
+
+                        if(dataSnapshot.child("Groups").child(groupname).child("Timer").hasChild("timer")) {
+                                tget = dataSnapshot.child("Groups").child(groupname).child("Timer").child("timer").getValue().toString();
+                            }
+
+                        for(i=2; i<100; i++){
+                            if(s == i){
+                                break;
+                            }
+                        }
 
                             if(gencode.equals(memcode.getText().toString())) {
 
+                                //the hash map store the data of the user into the particular group
                                 HashMap<String, Object> mem = new HashMap<>();
                                 mem.put("pname", currentUserName);
                                 mem.put("pimage", userProfileimage);
@@ -105,6 +138,7 @@ public class ConnectPageActivity extends AppCompatActivity {
 
                                 Intent intent = new Intent(ConnectPageActivity.this, SelectdGroupActivity.class);
                                 intent.putExtra("newGroupName", groupname);
+                                intent.putExtra("time", tget);
                                 startActivity(intent);
                             }
                             else{
@@ -170,7 +204,7 @@ public class ConnectPageActivity extends AppCompatActivity {
             }
         });
     }
-
+// pre requisites gathered from the database to fetch particular users name and Pro.Pic to add inside the GROUPS database
     private void getUserInfo() {
         userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -191,6 +225,7 @@ public class ConnectPageActivity extends AppCompatActivity {
         });
     }
 
+    //This Condition is used to so that once a person is logged in wont go back to the login page onStart
     @Override
     protected void onStart() {
         super.onStart();
@@ -198,7 +233,7 @@ public class ConnectPageActivity extends AppCompatActivity {
             sendUsertoLogin();
         }
     }
-
+//sending the user back to the login through intent
     private void sendUsertoLogin() {
         Intent intent= new Intent(ConnectPageActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

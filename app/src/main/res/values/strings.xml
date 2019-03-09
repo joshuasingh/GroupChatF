@@ -5,7 +5,15 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="time">
-        <item>15 seconds</item>
+        <item>5 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>45 minutes</item>
+        <item>1 hour</item>
+    </string-array>
+
+    <string-array name="timeingrp">
+        <item>5 minutes</item>
         <item>15 minutes</item>
         <item>30 minutes</item>
         <item>45 minutes</item>

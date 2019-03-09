@@ -254,19 +254,11 @@ public class VerifyActivity extends AppCompatActivity {
                                 rootRef.child("Registered").updateChildren(registermap);
                             }
 
-                            if(!numfetch.equals("+919870778473")) { //Admin
-
                                 Intent intent = new Intent(VerifyActivity.this, ConnectPageActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 Toast.makeText(VerifyActivity.this, "Verification Done", Toast.LENGTH_SHORT).show();
-                                // ...
-                            }
-                            else{
-                                Intent intent = new Intent(VerifyActivity.this, MainpageActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                            }
+
                         }
                         else {
                             // Log.w(TAG, "signInWithCredential:failure", task.getException());

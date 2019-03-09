@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -35,17 +37,18 @@ public class SelectdGroupActivity extends AppCompatActivity {
 
     private RecyclerView onrecycler, othmemrecycler, allmemcycler;
     private DatabaseReference gnameRef;
-    private String groupname, memtype, currentUserID;
-    private String MEMBER_TYPE = "Group Owner";
+    private String groupname, memtype, currentUserID, timeget, tim;
+    private String MEMBER_TYPE = "Admin";
     private TextView timer, msgdir, mTextViewCTD;
     private FirebaseAuth mAuth;
     private DatabaseReference rootRef;
     public static final String GPREFS = "Groupprefs";
     public static final String GNAME_KEY = "groupname";
+    long t;
 
     CountDownTimer cdt;
-    private long START_TIME_IN_MILLIS = 16000;
-    private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
+    long START_TIME_IN_MILLIS = 16000;
+    long mTimeLeftInMillis = START_TIME_IN_MILLIS;
     private boolean mTimerRunning;
 
     @Override
@@ -76,6 +79,17 @@ public class SelectdGroupActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         groupname = bundle.getString("newGroupName");
+        timeget = bundle.getString("timer");
+        Bundle b = getIntent().getExtras();
+        tim = b.getString("time");
+
+        if(timeget == null){
+            t= Long.parseLong(tim) * 60000;
+        }
+        else{
+            t= Long.parseLong(timeget) * 60000;
+        }
+
 
         SharedPreferences prefs = getSharedPreferences(GPREFS, 0);
         prefs.edit().putString(GNAME_KEY, groupname).apply();
@@ -119,10 +133,10 @@ public class SelectdGroupActivity extends AppCompatActivity {
     }
 
     private void startTimer(){
-        cdt = new CountDownTimer(mTimeLeftInMillis, 1000) {
+        cdt = new CountDownTimer(t, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                mTimeLeftInMillis = millisUntilFinished;
+                t = millisUntilFinished;
                 updatecdt();
             }
 
@@ -131,7 +145,9 @@ public class SelectdGroupActivity extends AppCompatActivity {
                 mTimerRunning = false;
                 mTextViewCTD.setVisibility(View.INVISIBLE);
                 timer.setVisibility(View.INVISIBLE);
-                startActivity(new Intent(SelectdGroupActivity.this, MainpageActivity.class));
+                Intent intent = new Intent(SelectdGroupActivity.this, ConnectPageActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }
@@ -140,11 +156,22 @@ public class SelectdGroupActivity extends AppCompatActivity {
     }
 
     private void updatecdt(){
-        int minutes= (int) (mTimeLeftInMillis/1000)/60;
-        int seconds= (int) (mTimeLeftInMillis/1000)%60;
+        int minutes= (int) (t/1000)/60;
+        int seconds= (int) (t/1000)%60;
 
         String timeLeftFormated = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         mTextViewCTD.setText(timeLeftFormated);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        cdt.cancel();
+        Intent intent = new Intent(SelectdGroupActivity.this, ConnectPageActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        finish();
     }
 
     @Override
@@ -190,5 +217,27 @@ public class SelectdGroupActivity extends AppCompatActivity {
             recyclername = itemView.findViewById(R.id.online_user_profile_name);
             recyclerimage = itemView.findViewById(R.id.online_users_profile_image);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.group__menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == R.id.groupsett) {
+            sendUsertoGroupSettings();
+        }
+        return true;
+    }
+
+    private void sendUsertoGroupSettings() {
+        Intent updateintent = new Intent(SelectdGroupActivity.this, GroupSettingsActivity.class);
+        startActivity(updateintent);
     }
 }

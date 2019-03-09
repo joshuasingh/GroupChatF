@@ -31,12 +31,14 @@ public class CreateGroupActivity extends AppCompatActivity {
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
 
-    private DatabaseReference rootRef, gRef;
-    private int s, j, i, k, t;
+    private DatabaseReference rootRef, gRef, userRef;
+    private int s, j, i, k;
     private EditText groupText, address, city, pincode, codegen;
     private Button create;
-    private String fetchname, randfetch1, randfetch, currentUserID, userProfileimage, currentUserName;
+    private String fetchname, randfetch1, randfetch, currentUserID, userProfileimage, currentUserName,
+                   phonenum;
     public Spinner spinner;
+    private long t;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         currentUserID = mAuth.getCurrentUser().getUid();
         rootRef= FirebaseDatabase.getInstance().getReference();
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         groupText = (EditText) findViewById(R.id.groupname);
         address= (EditText) findViewById(R.id.address);
@@ -63,40 +66,38 @@ public class CreateGroupActivity extends AppCompatActivity {
         create = (Button) findViewById(R.id.create);
         spinner = (Spinner) findViewById(R.id.spinner);
 
-        ArrayAdapter<CharSequence> ad = ArrayAdapter.createFromResource(this,
+        getUserInfo();
+
+        ArrayAdapter<CharSequence> adw = ArrayAdapter.createFromResource(CreateGroupActivity.this,
                 R.array.time, android.R.layout.simple_spinner_item);
-        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(ad);
+        adw.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adw);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String text = parent.getItemAtPosition(position).toString();
                 if(text.equals("15 minutes")){
-                    t= 1500000;
+                    t= 15;
                 }
                 else if(text.equals("30 minutes")){
-                    t= 300000;
+                    t= 30;
                 }
                 else if(text.equals("45 minutes")){
-                    t= 2700000;
+                    t= 45;
                 }
                 else if(text.equals("1 hour")){
-                    t= 600000;
+                    t= 60;
                 }
                 else{
-                    t=16000;
+                    t=5;
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                Toast.makeText(CreateGroupActivity.this, "Nothing was selected", Toast.LENGTH_SHORT).show();
             }
         });
-
-        Bundle bundle = getIntent().getExtras();
-        currentUserName = bundle.getString("getusername");
-        userProfileimage = bundle.getString("profilepic");
 
         rootRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -151,6 +152,10 @@ public class CreateGroupActivity extends AppCompatActivity {
                         }
                     }
 
+                            HashMap<String, Object> grp = new HashMap<>();
+                            grp.put(phonenum, phonenum);
+                            rootRef.child("GroupOwner").updateChildren(grp);
+
                             HashMap<String, Object> mem = new HashMap<>();
                             mem.put("pname", currentUserName);
                             mem.put("pimage", userProfileimage);
@@ -162,12 +167,23 @@ public class CreateGroupActivity extends AppCompatActivity {
                             grptitleandimg.put("grouptitle", fetchname);
                             grptitleandimg.put("priority", currentUserID);
                             grptitleandimg.put("group_id", randfetch);
-                            grptitleandimg.put("timer", t);
                             rootRef.child("Groups").child(fetchname).updateChildren(grptitleandimg);
+
+                            HashMap<String, Object> gtime = new HashMap<>();
+                            gtime.put("timer", t);
+                            rootRef.child("Groups").child(fetchname).child("Timer").updateChildren(gtime);
+
+                            HashMap<String, Object> gid = new HashMap<>();
+                            gid.put(randfetch, fetchname);
+                            rootRef.child("GroupId").updateChildren(gid);
 
                             rootRef.child("TotalGroupNumber").setValue(i);
 
-                    Intent intent = new Intent(CreateGroupActivity.this, MainpageActivity.class);
+                            String tget = String.valueOf(t).toString();
+
+                    Intent intent = new Intent(CreateGroupActivity.this, SelectdGroupActivity.class);
+                    intent.putExtra("newGroupName", fetchname);
+                    intent.putExtra("timer", tget);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
@@ -175,5 +191,27 @@ public class CreateGroupActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void getUserInfo() {
+        userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() && (dataSnapshot.hasChild("name")) && (dataSnapshot.hasChild("image"))){
+                    currentUserName = dataSnapshot.child("name").getValue().toString();
+                    userProfileimage = dataSnapshot.child("image").getValue().toString();
+                    phonenum = dataSnapshot.child("phone_number").getValue().toString();
+                }
+                if(dataSnapshot.exists() && (dataSnapshot.hasChild("name"))){
+                    currentUserName = dataSnapshot.child("name").getValue().toString();
+                    phonenum = dataSnapshot.child("phone_number").getValue().toString();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

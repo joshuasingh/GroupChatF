@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/creategroup"
+    tools:context=".CreateGroupActivity">
+
+    <EditText
+        android:id="@+id/groupname"
+        android:layout_width="322dp"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="80dp"
+        android:background="@android:color/transparent"
+        android:hint="Enter Group Name"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/address"
+        android:layout_width="322dp"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="125dp"
+        android:background="@android:color/transparent"
+        android:hint="Address" />
+
+    <EditText
+        android:id="@+id/city"
+        android:layout_width="323dp"
+        android:layout_height="82dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="172dp"
+        android:background="@android:color/transparent"
+        android:hint="City"
+        android:textSize="70dp" />
+
+    <EditText
+        android:id="@+id/pincode"
+        android:layout_width="323dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="278dp"
+        android:background="@android:color/transparent"
+        android:hint="Pincode"
+        android:inputType="number"
+        android:textSize="35dp" />
+
+    <EditText
+        android:id="@+id/gencode"
+        android:layout_width="270dp"
+        android:layout_height="120dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="59dp"
+        android:layout_marginTop="384dp"
+        android:layout_marginEnd="55dp"
+        android:layout_marginBottom="63dp"
+        android:background="@android:color/transparent"
+        android:hint="HMWUV"
+        android:textAlignment="center"
+        android:textSize="50dp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="219dp" />
+
+    <Button
+        android:id="@+id/create"
+        android:layout_width="338dp"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/create"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.798" />
+
+</RelativeLayout>

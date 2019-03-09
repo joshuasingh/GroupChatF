@@ -116,11 +116,11 @@ public class GroupChatActivity extends AppCompatActivity {
 
     private void saveMsgToDatabase() {
         message = edt.getText().toString();
-        messageKey = gnameRef.push().getKey();
+        messageKey = gnameRef.child("Messages").push().getKey();
 
 
         if(TextUtils.isEmpty(message)){
-            Toast.makeText(GroupChatActivity.this, "", Toast.LENGTH_SHORT).show();
+            edt.setText("");
         }
         else {
 //            Calendar calDate = Calendar.getInstance();
@@ -157,7 +157,7 @@ public class GroupChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
+        try{
         gnameRef.child("Messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -186,5 +186,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
             }
         });
+    }
+    catch(Exception e) {}
     }
 }

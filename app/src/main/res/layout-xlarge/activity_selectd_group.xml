@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/selectedgroup"
+    android:orientation="vertical"
+    tools:context=".SelectdGroupActivity">
+
+    <include
+        android:id="@+id/groupchattoolbar"
+        layout="@layout/app_bar_layout" />
+
+    <TextView
+        android:id="@+id/msgdir"
+        android:layout_width="match_parent"
+        android:layout_height="145dp"
+        android:layout_marginTop="45dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/online_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="82dp"
+        android:layout_marginEnd="9dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/othmem_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="9dp"
+        android:orientation="horizontal">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/allmem_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="9dp"
+        android:orientation="horizontal">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/offer"
+        android:layout_width="338dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/offer" />
+
+
+</LinearLayout>
