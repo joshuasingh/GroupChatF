@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "108420716280-79hj2rngpb08p1omdmr0imhquvjp5hui.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.groupchat.jasonchesney.groupchat",
+            "certificate_hash": "882916ae1b72a19b5801da5bf7529da56906e9e2"
+          }
+        },
+        {
           "client_id": "108420716280-f5djt6vdfaroi6dkkf0m868hmb44u3si.apps.googleusercontent.com",
           "client_type": 3
         }

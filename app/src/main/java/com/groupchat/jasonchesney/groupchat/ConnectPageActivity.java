@@ -28,12 +28,18 @@ public class ConnectPageActivity extends AppCompatActivity {
     DatabaseReference rootRef, userRef, gidRef;
     String groupname, currentUserID, currentUserName, userProfileimage, groupid, randfetch, gencode, tget;
     int s, j, i;
+    Intent i1;
     //NotificationCompat.Builder notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect_page);
+
+
+       //start background service
+               i1=new Intent(this,GroupAuth.class);
+        startService(i1);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -51,7 +57,6 @@ public class ConnectPageActivity extends AppCompatActivity {
         gidRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         getUserInfo();
-
 //        notification  = new NotificationCompat.Builder(ConnectPageActivity.this);
 //        notification.setAutoCancel(true);
 
@@ -59,8 +64,16 @@ public class ConnectPageActivity extends AppCompatActivity {
         createnew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ConnectPageActivity.this, CreateGroupActivity.class);
-                startActivity(intent);
+
+
+                //Intent intent = new Intent(ConnectPageActivity.this, CreateGroupActivity.class);
+                //startActivity(intent);
+                Toast.makeText(ConnectPageActivity.this," request has been given to admin",Toast.LENGTH_LONG).show();
+
+                DatabaseReference ref11 = FirebaseDatabase.getInstance().getReference("Admin").child("Pending Request").child(currentUserID);
+                ref11.setValue("first");
+
+
             }
         });
 
@@ -68,6 +81,8 @@ public class ConnectPageActivity extends AppCompatActivity {
         signout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                stopService(i1);
                 mAuth.signOut();
                 Intent intent = new Intent(ConnectPageActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);

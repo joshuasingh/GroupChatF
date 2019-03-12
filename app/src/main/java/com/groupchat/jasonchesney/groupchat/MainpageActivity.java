@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,7 @@ public class MainpageActivity extends AppCompatActivity {
     String x;
     Toolbar mtoolbar;
     AppBarLayout apb;
+    DataSnapshot ds;
 
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
@@ -65,7 +67,41 @@ public class MainpageActivity extends AppCompatActivity {
             window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
         }
 
-        mAuth = FirebaseAuth.getInstance();
+
+
+        //check datasnapshot
+        DatabaseReference ref45 = FirebaseDatabase.getInstance().getReference().child("Admin");
+
+        ref45.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Toast.makeText(MainpageActivity.this,"in ds",Toast.LENGTH_LONG).show();
+                ds = dataSnapshot;
+
+                //check pending requests
+                checkUpdates();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+                mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         gnameRef = FirebaseDatabase.getInstance().getReference("Groups");
         currentUserID = mAuth.getCurrentUser().getUid();
@@ -83,6 +119,35 @@ public class MainpageActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(Html.fromHtml("<font color='#10101'><h6>Groups</h6></font>"));
 
         getUserInfo();
+    }
+
+
+
+
+    //check pending request
+    private void checkUpdates() {
+
+
+
+
+
+
+
+        DatabaseReference ref11 = FirebaseDatabase.getInstance().getReference("Admin").child("Pending Request");
+        for (DataSnapshot datasnap : ds.child("Pending Request").getChildren()) {
+
+            String name = datasnap.getKey();
+           ref11.child(name).removeValue();
+
+          //  Toast.makeText(MainpageActivity.this,name,Toast.LENGTH_LONG).show();
+            Intent launchNextActivity;
+            launchNextActivity = new Intent(MainpageActivity.this, GivePer.class);
+            launchNextActivity.putExtra("user",name);
+            startActivity(launchNextActivity);
+
+
+        }
+
     }
 
     //Currently Admin on login comes to this page where the Groups are saved in the recycler view

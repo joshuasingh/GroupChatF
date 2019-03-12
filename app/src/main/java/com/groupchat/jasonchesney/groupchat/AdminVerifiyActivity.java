@@ -215,7 +215,7 @@ public class AdminVerifiyActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Log.d(TAG, "signInWithCredential:success");
-                            if(phonead.equals("+916200223575")) {
+                            if(phonead.equals("+919568301049")) {
                                 Intent intent = new Intent(AdminVerifiyActivity.this, MainpageActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);

@@ -15,7 +15,7 @@ public class AdminActivity extends AppCompatActivity {
 
     EditText adnum;
     Button adlogin;
-    final static String ADMIN = "6200223575";
+    final static String ADMIN = "9568301049";
     String getnum;
 
     @Override

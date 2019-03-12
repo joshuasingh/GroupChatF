@@ -106,6 +106,8 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -159,6 +161,8 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
     }
+
+    */
 
     private void RetreieveUserInfo() {
         rootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
