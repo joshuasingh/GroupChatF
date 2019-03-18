@@ -59,7 +59,10 @@ public class SplashActivity extends AppCompatActivity {
         groupowner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SplashActivity.this, GroupOwnerActivity.class));
+          //        startActivity(new Intent(SplashActivity.this, GroupOwnerActivity.class));
+                startActivity(new Intent(SplashActivity.this, CreateGroupActivity.class));
+
+
             }
         });
 

@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,11 +36,12 @@ public class CreateGroupActivity extends AppCompatActivity {
     private DatabaseReference rootRef, gRef, userRef;
     private int s, j, i, k;
     private EditText groupText, address, city, pincode, codegen;
-    private Button create;
+    private Button create,gen;
     private String fetchname, randfetch1, randfetch, currentUserID, userProfileimage, currentUserName,
                    phonenum;
     public Spinner spinner;
     private long t;
+    private String c1,c2,c3,c4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,20 +56,27 @@ public class CreateGroupActivity extends AppCompatActivity {
         }
 
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        currentUserID = mAuth.getCurrentUser().getUid();
+        //currentUser = mAuth.getCurrentUser();
+        //currentUserID = mAuth.getCurrentUser().getUid();
         rootRef= FirebaseDatabase.getInstance().getReference();
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
+        //aa
         groupText = (EditText) findViewById(R.id.groupname);
+        //aa
         address= (EditText) findViewById(R.id.address);
+        //aa
         city= (EditText) findViewById(R.id.city);
+        //aa
         pincode = (EditText) findViewById(R.id.pincode);
         codegen = (EditText) findViewById(R.id.gencode);
         create = (Button) findViewById(R.id.create);
+         gen= ( Button ) findViewById(R.id.newGene);
         spinner = (Spinner) findViewById(R.id.spinner);
 
-        getUserInfo();
+
+
+       // getUserInfo();
 
         ArrayAdapter<CharSequence> adw = ArrayAdapter.createFromResource(CreateGroupActivity.this,
                 R.array.time, android.R.layout.simple_spinner_item);
@@ -127,16 +137,25 @@ public class CreateGroupActivity extends AppCompatActivity {
             randfetch1 = str1.toString();
         }
         int lengthr = 6;
-        char[] chars1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-        StringBuilder str = new StringBuilder();
-        Random random1 = new Random();
+
+
+        /*Random random1 = new Random();
         for(j=1; j< lengthr; j++){
             char c = chars[random1.nextInt(chars1.length)];
             str.append(c);
             randfetch = str.toString();
-        }
+        }*/
 
-        codegen.setText(randfetch);
+
+        //generate group id
+        gen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                  groupGen();
+            }
+        });
+
+
 
         create.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,6 +211,33 @@ public class CreateGroupActivity extends AppCompatActivity {
         });
 
     }
+
+    private void groupGen()
+    {
+        c1=groupText.getText().toString();
+        c2=address.getText().toString();
+        c3=city.getText().toString();
+        c4=pincode.getText().toString();
+        char[] chars1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+         Random rand=new Random();
+
+        if(!c1.equals("") && !c2.equals("") && !c3.equals("") && !c4.equals("")) {
+            StringBuilder str = new StringBuilder();
+            str.append(c1.charAt(0));
+            str.append(c2.charAt(0));
+            str.append(c3.charAt(0));
+            str.append(c4.charAt(0));
+            str.append(chars1[rand.nextInt(26)]);
+            randfetch = str.toString();
+            codegen.setText(randfetch);
+        }
+        else
+        {
+            Toast.makeText(CreateGroupActivity.this,"Enter all the neccessary entries",Toast.LENGTH_LONG).show();
+        }
+
+    }
+
 
     private void getUserInfo() {
         userRef.child(currentUserID).addValueEventListener(new ValueEventListener() {

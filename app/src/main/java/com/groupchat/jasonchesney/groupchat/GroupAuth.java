@@ -74,7 +74,8 @@ public class GroupAuth extends IntentService {
     @SuppressLint("LongLogTag")
     public void checkUpdate()
     {
-          String name="";
+        DatabaseReference ref45 = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("grouper");
+        String name="";
           int val=0;
         for (DataSnapshot datasnap : ds.child(currentUserID).getChildren()) {
 
@@ -91,6 +92,7 @@ public class GroupAuth extends IntentService {
         //Log.i(TAG,val);
          if(val==1)
          {
+             ref45.setValue(0);
            Log.i(TAG,"in this looop");
              Intent dialogIntent = new Intent(this, CreateGroupActivity.class);
              dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

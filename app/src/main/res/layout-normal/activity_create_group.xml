@@ -29,6 +29,12 @@
         android:layout_marginTop="120dp"
         android:background="@android:color/transparent"
         android:hint="Address" />
+    <Button
+        android:id="@+id/newGene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="generate"
+        />
 
     <EditText
         android:id="@+id/city"

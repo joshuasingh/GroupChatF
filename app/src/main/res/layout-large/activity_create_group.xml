@@ -71,6 +71,12 @@
         android:hint="HMWUV"
         android:textAlignment="center"
         android:textSize="50dp" />
+    <Button
+        android:id="@+id/newGene"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="generate"
+        />
 
     <Spinner
         android:id="@+id/spinner"
